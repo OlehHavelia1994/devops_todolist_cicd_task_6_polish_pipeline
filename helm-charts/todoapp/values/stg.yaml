@@ -4,7 +4,7 @@ mysql:
 todoapp:
   namespace: todoapp
   image:
-    repository: olegglv/todoapp
+    repository: ikulyk404/todoapp
 
   resources:
     requests:

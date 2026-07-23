@@ -32,8 +32,8 @@ jobs:
   python-ci:
     strategy:
       matrix:
-        PYTHON_VERSION: ["${{ inputs.pythonVersion || '3.8' }}", "${{ inputs.pythonVersion || '3.9' }}"]
-        osType: ["${{ inputs.ostype || 'ubuntu-latest' }}", "${{ inputs.ostype || 'windows-latest' }}"]
+        PYTHON_VERSION: ["${{github.event_name == 'workflow_dispatch' && inputs.pythonVersion || '3.8'}}", "${{github.event_name == 'workflow_dispatch' && inputs.pythonVersion || '3.9'}}"]
+        osType: ["${{github.event_name == 'workflow_dispatch' && inputs.ostype || 'ubuntu-latest'}}", "${{github.event_name == 'workflow_dispatch' && inputs.ostype || 'windows-latest'}}"]
 
     runs-on: ${{ matrix.osType }}
     defaults:
@@ -74,7 +74,7 @@ jobs:
       - name: Upload python artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.osType }}-${{ matrix.PYTHON_VERSION }}
+          name: ${{matrix.osType}}-${{matrix.PYTHON_VERSION}}
           path: .
 
       - name: Upload helm artifacts
@@ -92,16 +92,16 @@ jobs:
           path: ${{ github.workspace }}/cluster.yml
 
   docker-ci:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     name: Build and Push Image
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'main' }}
     needs: python-ci
     steps:
 
     - uses: actions/download-artifact@v4
       name: Download python artifacts
       with:
-        name: ${{ matrix.osType }}-${{ matrix.PYTHON_VERSION }}
+        name: ${{matrix.osType}}-${{matrix.PYTHON_VERSION}}
         path: .
 
     - name: Login to Docker Hub
@@ -118,9 +118,9 @@ jobs:
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.DockerImageName }}:${{ github.sha }}
 
   helm-ci:
+    if: ${{ github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
     needs: python-ci
-    if: github.ref_name == 'main'
     name: Helm CI
     steps:
 
