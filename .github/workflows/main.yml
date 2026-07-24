@@ -32,8 +32,8 @@ jobs:
   python-ci:
     strategy:
       matrix:
-        PYTHON_VERSION: ["${{github.event_name == 'workflow_dispatch' && inputs.pythonVersion || '3.8'}}", "${{github.event_name == 'workflow_dispatch' && inputs.pythonVersion || '3.9'}}"]
-        osType: ["${{github.event_name == 'workflow_dispatch' && inputs.ostype || 'ubuntu-latest'}}", "${{github.event_name == 'workflow_dispatch' && inputs.ostype || 'windows-latest'}}"]
+        PYTHON_VERSION: ${{ inputs.pythonVersion }}
+        osType: ${{ inputs.ostype }}
 
     runs-on: ${{ matrix.osType }}
     defaults:
